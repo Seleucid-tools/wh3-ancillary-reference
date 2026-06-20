@@ -207,16 +207,17 @@ def _unit_name(key):
     return s.replace("_", " ").title()
 
 def _ability_kind(a):
-    """Classify the ability: summon / vortex / bombardment / magic missile (None for plain augments)."""
+    """Classify a granted ability by casting type. The `vortex` COLUMN is just the moving-VFX
+    bucket (wind/breath spells have one too) — `targetting_aoe` is the real spell type."""
     if not a: return None
-    if a.get("spawned_unit"):        return "Summon: " + _unit_name(a["spawned_unit"])
-    if a.get("vortex"):              return "Vortex spell"
-    if a.get("bombardment") == "true": return "Bombardment"
-    if a.get("activated_projectile"): return "Magic missile"
+    if a.get("spawned_unit"): return "Summon: " + _unit_name(a["spawned_unit"])
     aoe = a.get("targetting_aoe", "")
-    if "vortex" in aoe:  return "Vortex spell"
-    if "missile" in aoe: return "Magic missile"
-    if "spawn" in aoe:   return "Summon"
+    if "missile" in aoe:                 return "Magic missile"
+    if "wind" in aoe or "breath" in aoe: return "Wind spell"   # both are line/cone damage spells
+    if "vortex" in aoe:                  return "Vortex spell"  # genuine vortex (e.g. Pit of Shades)
+    if "bombard" in aoe or a.get("bombardment") == "true": return "Bombardment"
+    if "spawn" in aoe:                   return "Summon"
+    if a.get("activated_projectile"):    return "Magic missile"
     return None
 
 def ability_mechanics(ab):
@@ -415,7 +416,7 @@ for r in anc:
         })
     tier, color, rlabel = rarity(r.get("uniqueness_score",""))
     lock_names, lock_races = char_lock(key)
-    item = {"name":name,"key":key,"effects":effects,"sets":sets,"lock":lock_names,
+    item = {"name":name,"key":key,"cat":group,"effects":effects,"sets":sets,"lock":lock_names,
             "flavor":resolve(LOC.get("ancillaries_colour_text_"+key,"")),
             "tier":tier,"color":color,"rlabel":rlabel,"rank":RANK[tier],
             "icon":icon_src(r.get("type","")),"legendary":r.get("legendary_item","false")=="true"}
@@ -454,7 +455,7 @@ def render_item(it):
            if it["icon"] else '<span class="ico ph">◆</span>')
     rar = f'<span class="rar" style="color:{it["color"]}">{esc(it["rlabel"])}</span>' if it["rlabel"] else ""
     tip = f'<div class="tip">{esc(it["flavor"])}</div>' if it["flavor"] else ""
-    return (f'<div class="item" data-name="{esc(it["name"]).lower()}" data-rar="{it["tier"] or "none"}" style="--rar:{it["color"]}">'
+    return (f'<div class="item" data-name="{esc(it["name"]).lower()}" data-rar="{it["tier"] or "none"}" data-cat="{esc(it["cat"])}" data-lock="{"1" if it["lock"] else "0"}" style="--rar:{it["color"]}">'
             f'<div class="ihead">{img}<span class="iname">{esc(it["name"])}{leg}</span>{rar}</div>'
             f'{lock}<ul class="eff">{eff_html(it["effects"])}</ul>{setb}'
             f'<div class="ikey" title="internal key (for RPFM)">{esc(it["key"])}</div>{tip}</div>')
@@ -473,6 +474,8 @@ for f in factions:
                       f'<div class="grid">{"".join(render_item(it) for it in items)}</div>')
     sections.append(f'<section class="faction" data-f="{esc(f)}"><h2>{esc(f)}</h2>{"".join(blocks)}</section>')
 legend = "".join(f'<span class="lg" style="--c:{RC[t]}">{RL[t]}</span>' for t in ["common","uncommon","rare","legendary","crafted"])
+present_cats = [g for g in CAT_ORDER if any(g in data[f] for f in factions)]
+cat_boxes = "".join(f'<label><input type="checkbox" class="catcb" value="{esc(g)}" checked>{esc(g)}</label>' for g in present_cats)
 
 HTML = f"""<!doctype html><html><head><meta charset="utf-8"><title>WH3 Ancillaries</title>
 <style>
@@ -480,7 +483,15 @@ HTML = f"""<!doctype html><html><head><meta charset="utf-8"><title>WH3 Ancillari
 *{{box-sizing:border-box}}
 body{{margin:0;background:var(--bg);color:var(--txt);font:13.5px/1.45 system-ui,Segoe UI,Roboto,sans-serif}}
 header{{position:sticky;top:0;background:#111317f2;backdrop-filter:blur(6px);border-bottom:1px solid var(--edge);padding:9px 16px;z-index:10}}
-header h1{{margin:0 0 7px;font-size:17px}} #search{{width:100%;max-width:420px;padding:7px 10px;background:var(--panel);border:1px solid var(--edge);border-radius:6px;color:var(--txt)}}
+header h1{{margin:0 0 7px;font-size:17px}} #search{{flex:1 1 240px;max-width:420px;padding:7px 10px;background:var(--panel);border:1px solid var(--edge);border-radius:6px;color:var(--txt)}}
+#toolbar{{display:flex;gap:12px;align-items:center;flex-wrap:wrap}}
+#cats{{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px}}
+#cats .catlbl{{color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.5px;font-size:11px}}
+#cats label{{display:inline-flex;align-items:center;gap:4px;cursor:pointer;padding:2px 8px;border:1px solid var(--edge);border-radius:12px;background:var(--panel);color:var(--txt);user-select:none}}
+#cats label:hover{{border-color:var(--acc)}} #cats input{{accent-color:var(--gold);cursor:pointer;margin:0}}
+#cats .catbtn{{padding:2px 9px;border:1px solid var(--edge);border-radius:12px;background:#16191f;color:var(--mut);cursor:pointer;font-size:11px;text-transform:uppercase;letter-spacing:.5px}}
+#cats .catbtn:hover{{border-color:var(--gold);color:var(--gold)}}
+#cats .lockcb{{margin-left:8px;border-color:var(--gold);color:var(--gold)}}
 .legend{{display:inline-flex;gap:10px;margin-left:14px;font-size:11px}} .lg::before{{content:"";display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--c);margin-right:4px}}
 #nav{{margin-top:7px;display:flex;flex-wrap:wrap;gap:5px}}
 .fbtn{{background:var(--panel);border:1px solid var(--edge);color:var(--mut);border-radius:14px;padding:3px 10px;cursor:pointer;font-size:12px}}
@@ -507,20 +518,28 @@ main{{padding:12px 16px;max-width:1500px;margin:0 auto}}
 .item:hover .tip{{display:block}} .hidden{{display:none!important}}
 </style></head><body>
 <header><h1>WH3 — Equippable Ancillaries <span class="cnt">({n_items} items)</span><span class="legend">{legend}</span></h1>
-<input id="search" placeholder="Search name / effect / ability / key…  (Esc clears)">
+<div id="toolbar"><input id="search" placeholder="Search name / effect / ability / key…  (Esc clears)">
+<div id="cats"><span class="catlbl">Type</span>{cat_boxes}<button id="catAll" class="catbtn">all</button><button id="catNone" class="catbtn">none</button><label class="lockcb" title="Hide items locked to a specific legendary character"><input type="checkbox" id="genonly">Generic only</label></div></div>
 <div id="nav"><button class="fbtn active" data-f="*">All <span class="cnt">{len(factions)} factions</span></button>{nav}</div></header>
 <main>{"".join(sections)}</main>
 <script>
 const q=document.getElementById('search'),items=[...document.querySelectorAll('.item')],facs=[...document.querySelectorAll('.faction')],btns=[...document.querySelectorAll('.fbtn')];
 let curF='*';
+const cbs=[...document.querySelectorAll('.catcb')];
+let cats=new Set(cbs.filter(c=>c.checked).map(c=>c.value));
+const genonly=document.getElementById('genonly');
 function apply(){{const t=q.value.trim().toLowerCase();
  facs.forEach(s=>s.classList.toggle('hidden',!(curF==='*'||s.dataset.f===curF)));
- items.forEach(it=>it.classList.toggle('hidden',!(!t||it.dataset.name.includes(t)||it.textContent.toLowerCase().includes(t))));
+ items.forEach(it=>it.classList.toggle('hidden',!((!t||it.dataset.name.includes(t)||it.textContent.toLowerCase().includes(t))&&cats.has(it.dataset.cat)&&(!genonly.checked||it.dataset.lock==='0'))));
  document.querySelectorAll('.faction:not(.hidden)').forEach(s=>{{
    s.querySelectorAll('.cat').forEach(h=>{{const g=h.nextElementSibling,any=[...g.children].some(c=>!c.classList.contains('hidden'));h.classList.toggle('hidden',!any);g.classList.toggle('hidden',!any);}});
    if(![...s.querySelectorAll('.grid')].some(g=>!g.classList.contains('hidden'))) s.classList.add('hidden');}});}}
 q.addEventListener('input',apply);q.addEventListener('keydown',e=>{{if(e.key==='Escape'){{q.value='';apply();}}}});
 btns.forEach(b=>b.addEventListener('click',()=>{{curF=b.dataset.f;btns.forEach(x=>x.classList.toggle('active',x===b));apply();}}));
+cbs.forEach(c=>c.addEventListener('change',()=>{{cats=new Set(cbs.filter(x=>x.checked).map(x=>x.value));apply();}}));
+document.getElementById('catAll').addEventListener('click',()=>{{cbs.forEach(c=>c.checked=true);cats=new Set(cbs.map(c=>c.value));apply();}});
+document.getElementById('catNone').addEventListener('click',()=>{{cbs.forEach(c=>c.checked=false);cats=new Set();apply();}});
+genonly.addEventListener('change',apply);
 </script></body></html>"""
 with open(OUT, "w", encoding="utf-8") as f: f.write(HTML)
 print("wrote", OUT)

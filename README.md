@@ -63,7 +63,17 @@ Each card is one ancillary:
 - **⊟ Set bonus** — extra effects active when the listed set items are equipped together.
 - **bottom line** — the item's internal DB key, handy when editing in RPFM.
 
-The search box at the top matches name, effect text, ability, or key (Esc clears).
+## Filtering
+
+The toolbar combines four filters, so you can narrow 1,900+ items to exactly what you need:
+
+- **Search** — matches name, effect text, ability, or key (Esc clears).
+- **Type** checkboxes (with **all** / **none**) — show only Weapons, Enchanted Items, etc.
+- **Generic only** — hides items locked to a specific legendary character.
+- **Faction** buttons — one faction at a time, or all.
+
+Example: *"a generic enchanted item for my campaign"* → **none** → check **Enchanted Items** →
+tick **Generic only** → pick your faction.
 
 ## Credits & disclaimer
 
