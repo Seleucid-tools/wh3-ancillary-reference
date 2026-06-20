@@ -41,6 +41,30 @@ Served from `index.html` via GitHub Pages. It has no external references and no 
 text, CSS, and rarity-coloured placeholder icons — so it's safe to host publicly. Run the
 script without `--no-assets` locally if you want the real game icons.
 
+## How to read a card
+
+Each card is one ancillary:
+
+- **Name + rarity** — the tag (Common / Uncommon / Rare / Unique / Crafted) and the
+  colour-coded border show the item's rarity.
+- **🔒 Only:** — if present, only these characters can equip the item.
+- **• bullets** — flat effects the item grants while equipped (stats, attributes, etc.).
+- **✦ ability** — an *ability* the item grants. The **▸** lines beneath it are its real
+  mechanics, read straight from the battle tables:
+  - kind — Summon / Vortex spell / Magic missile / Bombardment,
+  - timing — active duration + cooldown + uses, or passive aura,
+  - **Targets:** self / allies / enemies,
+  - activation condition — e.g. *Active only when out of melee*,
+  - numbers — Winds-of-Magic recharge/reserve, healing, damage, stat buffs,
+  - named on-hit effects — e.g. *Imbues attacks: Poison*.
+- **Spell modifiers** — lines like *Wind of Death: −4 Winds of Magic cost* or
+  *All spells: −20s cooldown* mean the item makes a spell you **already know** cheaper or
+  faster; it does *not* grant that spell.
+- **⊟ Set bonus** — extra effects active when the listed set items are equipped together.
+- **bottom line** — the item's internal DB key, handy when editing in RPFM.
+
+The search box at the top matches name, effect text, ability, or key (Esc clears).
+
 ## Credits & disclaimer
 
 Total War: WARHAMMER III and all associated names, data, and artwork are © Creative Assembly /
