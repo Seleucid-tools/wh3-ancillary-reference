@@ -17,7 +17,7 @@ ROOT = os.environ.get("WH3_EXTRACT", os.path.join(HERE, "fullExtraction"))
 DB   = os.path.join(ROOT, "db")
 LOCD = os.path.join(ROOT, "text", "db")
 WEB  = "--no-assets" in sys.argv   # asset-free build for public hosting: no CA images, CSS placeholders
-OUT  = os.path.join(HERE, "ancillaries_web.html" if WEB else "ancillaries.html")
+OUT  = os.path.join(HERE, "index.html" if WEB else "ancillaries.html")   # web build = index.html for GitHub Pages
 
 def read_tsv(name):
     with open(os.path.join(DB, name, "data__.tsv"), encoding="utf-8", errors="replace") as f:

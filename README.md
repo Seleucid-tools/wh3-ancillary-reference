@@ -30,13 +30,16 @@ copyrighted is redistributed here or passes through this project.
    ```
 
    - `ancillaries.html` — full icons, for personal use (references your local game files).
-   - `ancillaries_web.html` — **zero game assets**, a single portable file safe to host publicly
+   - `index.html` — **zero game assets**, a single portable file safe to host publicly
      (e.g. GitHub Pages). This is the build to share.
 
-## Hosting a public demo
+## Live demo
 
-Host `ancillaries_web.html` only. It has no external references and no CA art — just text,
-your CSS, and rarity-coloured placeholder icons.
+**https://seleucid-tools.github.io/wh3-ancillary-reference/**
+
+Served from `index.html` via GitHub Pages. It has no external references and no CA art — just
+text, CSS, and rarity-coloured placeholder icons — so it's safe to host publicly. Run the
+script without `--no-assets` locally if you want the real game icons.
 
 ## Credits & disclaimer
 
