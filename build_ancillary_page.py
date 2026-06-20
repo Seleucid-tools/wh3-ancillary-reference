@@ -477,7 +477,9 @@ legend = "".join(f'<span class="lg" style="--c:{RC[t]}">{RL[t]}</span>' for t in
 present_cats = [g for g in CAT_ORDER if any(g in data[f] for f in factions)]
 cat_boxes = "".join(f'<label><input type="checkbox" class="catcb" value="{esc(g)}" checked>{esc(g)}</label>' for g in present_cats)
 
-HTML = f"""<!doctype html><html><head><meta charset="utf-8"><title>WH3 Ancillaries</title>
+HTML = f"""<!doctype html><html><head><meta charset="utf-8"><title>Warhammer 3 Equippable Ancillaries</title>
+<meta name="description" content="Searchable reference for every equippable ancillary in Total War: WARHAMMER III — effects, set bonuses, character locks, and full ability breakdowns for every faction.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 :root{{--bg:#15171c;--panel:#1d212a;--edge:#2c323e;--txt:#d7dbe2;--mut:#8a93a3;--acc:#6fb3ff;--gold:#d8b863}}
 *{{box-sizing:border-box}}
@@ -517,7 +519,7 @@ main{{padding:12px 16px;max-width:1500px;margin:0 auto}}
 .tip{{display:none;position:absolute;left:0;top:100%;z-index:20;width:min(360px,90vw);margin-top:3px;background:#0e1014;border:1px solid var(--gold);border-radius:7px;padding:9px 11px;color:#c9b98f;font-style:italic;box-shadow:0 6px 20px #000a}}
 .item:hover .tip{{display:block}} .hidden{{display:none!important}}
 </style></head><body>
-<header><h1>WH3 — Equippable Ancillaries <span class="cnt">({n_items} items)</span><span class="legend">{legend}</span></h1>
+<header><h1>Warhammer 3 — Equippable Ancillaries <span class="cnt">({n_items} items)</span><span class="legend">{legend}</span></h1>
 <div id="toolbar"><input id="search" placeholder="Search name / effect / ability / key…  (Esc clears)">
 <div id="cats"><span class="catlbl">Type</span>{cat_boxes}<button id="catAll" class="catbtn">all</button><button id="catNone" class="catbtn">none</button><label class="lockcb" title="Hide items locked to a specific legendary character"><input type="checkbox" id="genonly">Generic only</label></div></div>
 <div id="nav"><button class="fbtn active" data-f="*">All <span class="cnt">{len(factions)} factions</span></button>{nav}</div></header>
