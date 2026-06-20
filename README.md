@@ -29,6 +29,9 @@ copyrighted is redistributed here or passes through this project.
    python3 build_ancillary_page.py --no-assets # asset-free: CSS placeholder icons, no images
    ```
 
+   > **Windows:** use `py` instead of `python3` — e.g. `py build_ancillary_page.py`.
+   > (Needs Python 3.6+; the script is standard-library only, nothing to `pip install`.)
+
    - `ancillaries.html` — full icons, for personal use (references your local game files).
    - `index.html` — **zero game assets**, a single portable file safe to host publicly
      (e.g. GitHub Pages). This is the build to share.
